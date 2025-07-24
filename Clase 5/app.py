@@ -1,6 +1,6 @@
 from flask import Flask
-from SantiagoAcuña_2022100684.login import login
-from SantiagoAcuña_2022100684.logout import logout
+from app import login
+from logout import logout
 
 
 
