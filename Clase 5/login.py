@@ -1,55 +1,56 @@
-from flask import Blueprint
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request, jsonify
+
+cliente = Blueprint('cliente', __name__)
+
+@cliente.route('/cliente', methods=['POST'])
+def obtener_datos_cliente():
+
+    print("Petición POST recibida en cliente")
+
+    datos_entrada = request.get_json()
+
+    if not datos_entrada or 'ci' not in datos_entrada:
+        print("Error: La solicitud no contenía el JSON esperado.")
+        return jsonify({
+            "accion": "Solicitud inválida",
+            "codRes": "ERROR",
+            "menRes": "Cuerpo de la solicitud vacío o sin la clave 'ci'.",
+        }), 400
+
+    cedula_recibida = datos_entrada['ci']
+    print(f"Cédula recibida para buscar: {cedula_recibida}")
+
+    respuesta_dict = verificar_cliente(cedula_recibida)
+    
+    status_code = 200 if respuesta_dict["codRes"] == "sin errores" else 404
+
+    return jsonify(respuesta_dict), status_code
 
 
-login = Blueprint('login', __name__)
 
-@login.route('/login', methods=['POST'])
+def verificar_cliente(ci_a_verificar):
+   
+    ci_valida = "5478271"
+    nombre_valido = "Santiago"
+    apellidos_validos = "Ruiz Diaz"
 
-def llamarServiciosSet():
-    user= request.json.get('user')
-    password = request.json.get('password')
-    print("User enviado: ",user, "Password enviado: ",password) 
+    if ci_a_verificar == ci_valida:
+        print(f"Cliente encontrado: {ci_a_verificar}")
+        respuesta = {
+            "accion": "exito",
+            "codRes": "sin errores",
+            "menRes": "OK",
+            "ci": ci_a_verificar,
+            "nombre": nombre_valido,
+            "apellidos": apellidos_validos
+        }
+    else:
+        print(f"Cliente NO encontrado: {ci_a_verificar}")
+        respuesta = {
+            "accion": "Cliente no existe",
+            "codRes": "ERROR",
+            "menRes": "Error cliente",
+            "ci": ci_a_verificar
+        }
 
-    codRes, menRes, accion, rol, user = inicializarVariables(user, password)
-
-    salida = {
-        "codRes": codRes,
-        "menRes": menRes,
-        "usuario": user,
-        "accion": accion,
-        "rol": rol  # Usar el rol retornado por la función
-    }
-
-    status_code = 200 if codRes == 0 else 401
-    return jsonify(salida), status_code
-
-def inicializarVariables(user, password):
-    codRes = 0
-    menRes = "OK"
-    accion = "login exitoso"
-    rol = "Admin"  # Asignar un rol por defecto
-    userLocal = "sgacuna"
-    passwordLocal = "unida"
-
-    try:
-        if user == userLocal and password == passwordLocal:
-            print("Login exitoso")
-            accion = "login exitoso"
-            rol = "Admin"  # Asignar un rol por defecto
-        else:
-            codRes = 1
-            menRes = "Usuario o contraseña incorrectos"
-            accion = "login fallido"
-            rol = "N/A"
-            user = "N/A"
-        print("Respuesta del login:", codRes, menRes, accion, rol, user)
-        return codRes, menRes, accion, rol, user
-    except Exception as e:
-        print("Error en el login:", e)
-        codRes = 1
-        menRes = "Error en el login"
-        accion = "error en el login"
-        rol = "N/A"
-        user = "N/A"
-        return codRes, menRes, accion, rol, user
+    return respuesta
