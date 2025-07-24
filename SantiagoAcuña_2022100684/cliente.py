@@ -4,18 +4,11 @@ cliente = Blueprint('cliente', __name__)
 
 @cliente.route('/cliente', methods=['POST'])
 def obtener_datos_cliente():
-
     print("-> Petición POST recibida en /cliente")
-
     datos_entrada = request.get_json()
 
     if not datos_entrada or 'ci' not in datos_entrada:
-        print("Error: La solicitud no contenía el JSON esperado.")
-        return jsonify({
-            "accion": "Solicitud inválida",
-            "codRes": "ERROR",
-            "menRes": "Cuerpo de la solicitud vacío o sin la clave 'ci'.",
-        }), 400
+        return jsonify({"menRes": "JSON inválido"}), 400
 
     cedula_recibida = datos_entrada['ci']
     print(f"Cédula recibida para buscar: {cedula_recibida}")
@@ -26,15 +19,13 @@ def obtener_datos_cliente():
 
     return jsonify(respuesta_dict), status_code
 
-
 def verificar_cliente(ci_a_verificar):
-    
+
     ci_valida = "5478271"
     nombre_valido = "Santiago"
     apellidos_validos = "Ruiz Diaz"
 
     if ci_a_verificar == ci_valida:
-        print(f"Cliente encontrado: {ci_a_verificar}")
         respuesta = {
             "accion": "exito",
             "codRes": "sin errores",
@@ -44,7 +35,6 @@ def verificar_cliente(ci_a_verificar):
             "apellidos": apellidos_validos
         }
     else:
-        print(f"Cliente NO encontrado: {ci_a_verificar}")
         respuesta = {
             "accion": "Cliente no existe",
             "codRes": "ERROR",
